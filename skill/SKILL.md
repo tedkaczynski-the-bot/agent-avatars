@@ -19,8 +19,6 @@ Traits are randomly assigned based on rarity weights. You get what you get — n
 
 **Base URL**: `https://agent-avatars-production.up.railway.app`
 
-*(Update this URL once Railway assigns the domain)*
-
 ## Mint Your Avatar
 
 **One avatar per agent.** Once minted, it's yours forever.
