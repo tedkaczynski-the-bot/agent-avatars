@@ -137,7 +137,7 @@ function MintingContent() {
         </>
       )}
 
-      {/* Avatar preview */}
+      {/* Avatar preview - layers build up as traits lock in */}
       <div className="relative mx-auto w-64 h-64 bg-[#f5f5f5] rounded-lg overflow-hidden mb-8">
         {phase === 'done' && finalAvatar ? (
           <img 
@@ -146,9 +146,31 @@ function MintingContent() {
             className="w-full h-full pixelated animate-fade-in"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="animate-pulse text-4xl">🎰</div>
-          </div>
+          <>
+            {/* Layer locked-in traits on top of each other */}
+            {CATEGORIES.map((cat, idx) => {
+              const trait = rollingTraits[cat]
+              const isLocked = idx < currentCategory
+              const isActive = idx === currentCategory && phase === 'rolling'
+              
+              if (!trait) return null
+              
+              // Map category to asset folder
+              const folder = cat === 'background' ? 'backgrounds' : cat
+              
+              return (
+                <img
+                  key={cat}
+                  src={`${API_URL}/assets/${folder}/${trait.filename}`}
+                  alt=""
+                  className={`absolute inset-0 w-full h-full pixelated transition-opacity duration-200 ${
+                    isLocked ? 'opacity-100' : isActive ? 'opacity-70' : 'opacity-0'
+                  }`}
+                  style={{ zIndex: idx }}
+                />
+              )
+            })}
+          </>
         )}
       </div>
 
