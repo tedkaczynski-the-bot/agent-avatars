@@ -9,6 +9,7 @@ function HomeContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [stats, setStats] = useState({ total_avatars: 0, recent: [] })
+  const [previewAvatars, setPreviewAvatars] = useState([])
   const [currentPreview, setCurrentPreview] = useState(0)
 
   // Auto-redirect agents to mint page
@@ -28,18 +29,25 @@ function HomeContent() {
       .then(r => r.json())
       .then(setStats)
       .catch(() => {})
+    
+    // Fetch random avatars for the preview loop
+    fetch(`${API_URL}/api/random?count=10`)
+      .then(r => r.json())
+      .then(data => setPreviewAvatars(data.avatars || []))
+      .catch(() => {})
   }, [])
 
+  // Fast looping preview (300ms per avatar)
   useEffect(() => {
-    if (stats.recent?.length > 1) {
+    if (previewAvatars.length > 1) {
       const interval = setInterval(() => {
-        setCurrentPreview(i => (i + 1) % stats.recent.length)
-      }, 800)
+        setCurrentPreview(i => (i + 1) % previewAvatars.length)
+      }, 300)
       return () => clearInterval(interval)
     }
-  }, [stats.recent])
+  }, [previewAvatars])
 
-  const preview = stats.recent?.[currentPreview]
+  const preview = previewAvatars[currentPreview]
 
   return (
     <div className="space-y-12">

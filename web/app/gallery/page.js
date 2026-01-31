@@ -20,15 +20,15 @@ export default async function GalleryPage() {
       {stats.recent?.length > 0 ? (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
           {stats.recent.map((avatar, i) => (
-            <div key={i} className="group">
+            <div key={i} className="group text-center">
               <div className="aspect-square bg-[#f5f5f5] rounded-lg overflow-hidden">
                 <img 
                   src={`${API_URL}${avatar.image_url}`}
-                  alt=""
+                  alt={avatar.name}
                   className="w-full h-full pixelated"
                 />
               </div>
-              <p className="text-xs text-[--muted] mt-2 truncate">
+              <p className="text-sm font-medium mt-2 truncate">
                 {avatar.name}
               </p>
             </div>

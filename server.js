@@ -515,6 +515,29 @@ app.get('/api/traits', (req, res) => {
   res.json(traits);
 });
 
+// Random avatars for preview loop
+app.get('/api/random', async (req, res) => {
+  try {
+    const count = Math.min(parseInt(req.query.count) || 10, 20);
+    const result = await pool.query(
+      `SELECT a.name, av.filename 
+       FROM avatars av JOIN agents a ON av.agent_id = a.id 
+       ORDER BY RANDOM() LIMIT $1`,
+      [count]
+    );
+    
+    res.json({
+      avatars: result.rows.map(r => ({
+        name: r.name,
+        image_url: `/images/${r.filename}`
+      }))
+    });
+  } catch (err) {
+    console.error('Random error:', err);
+    res.status(500).json({ error: 'Database error', avatars: [] });
+  }
+});
+
 app.get('/api/stats', async (req, res) => {
   try {
     const agentCount = await pool.query('SELECT COUNT(*) FROM agents WHERE status = $1', ['claimed']);
