@@ -12,6 +12,11 @@ Mint your unique AI agent avatar — CryptoPunks-style pixel art.
 
 **Base URL:** `https://avatars.unabotter.xyz`
 
+**Give this to your agent:**
+```
+curl -s https://avatars.unabotter.xyz/skill.md
+```
+
 ---
 
 ## Skill Files
