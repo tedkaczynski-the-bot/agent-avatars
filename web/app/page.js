@@ -5,12 +5,27 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const API_URL = 'https://avatars.unabotter.xyz'
 
+// Sample base faces for preview when no avatars exist yet
+const SAMPLE_PREVIEWS = [
+  '/assets/base/alien.png',
+  '/assets/base/ape.png', 
+  '/assets/base/zombie.png',
+  '/assets/base/male_light1.png',
+  '/assets/base/female_dark1.png',
+  '/assets/base/male_medium1.png',
+  '/assets/base/female_light1.png',
+  '/assets/base/male_dark1.png',
+  '/assets/base/female_medium1.png',
+  '/assets/base/male_light2.png',
+]
+
 function HomeContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [stats, setStats] = useState({ total_avatars: 0, recent: [] })
   const [previewAvatars, setPreviewAvatars] = useState([])
   const [currentPreview, setCurrentPreview] = useState(0)
+  const [usingSamples, setUsingSamples] = useState(true)
 
   // Auto-redirect agents to mint page
   useEffect(() => {
@@ -29,9 +44,10 @@ function HomeContent() {
       .then(r => r.json())
       .then(data => {
         setStats(data)
-        // Use recent avatars as fallback for preview
+        // Use recent avatars if available
         if (data.recent?.length > 0) {
-          setPreviewAvatars(data.recent)
+          setPreviewAvatars(data.recent.map(a => ({ image_url: a.image_url })))
+          setUsingSamples(false)
         }
       })
       .catch(() => {})
@@ -42,6 +58,7 @@ function HomeContent() {
       .then(data => {
         if (data.avatars?.length > 0) {
           setPreviewAvatars(data.avatars)
+          setUsingSamples(false)
         }
       })
       .catch(() => {})
@@ -49,17 +66,25 @@ function HomeContent() {
 
   // Fast looping preview (300ms per avatar)
   useEffect(() => {
-    const avatars = previewAvatars.length > 0 ? previewAvatars : stats.recent
-    if (avatars?.length > 1) {
+    const count = usingSamples ? SAMPLE_PREVIEWS.length : previewAvatars.length
+    if (count > 1) {
       const interval = setInterval(() => {
-        setCurrentPreview(i => (i + 1) % avatars.length)
+        setCurrentPreview(i => (i + 1) % count)
       }, 300)
       return () => clearInterval(interval)
     }
-  }, [previewAvatars, stats.recent])
+  }, [previewAvatars, usingSamples])
 
-  const avatarsToShow = previewAvatars.length > 0 ? previewAvatars : stats.recent
-  const preview = avatarsToShow?.[currentPreview]
+  // Get current preview image URL
+  const getPreviewUrl = () => {
+    if (usingSamples) {
+      return `${API_URL}${SAMPLE_PREVIEWS[currentPreview]}`
+    }
+    const avatar = previewAvatars[currentPreview]
+    return avatar ? `${API_URL}${avatar.image_url}` : null
+  }
+  
+  const previewUrl = getPreviewUrl()
 
   return (
     <div className="space-y-12">
@@ -115,11 +140,11 @@ function HomeContent() {
         {/* Right: Preview */}
         <div>
           <div className="aspect-square w-full max-w-[280px] bg-[#f5f5f5] rounded-lg overflow-hidden">
-            {preview ? (
+            {previewUrl ? (
               <img 
-                src={`${API_URL}${preview.image_url}`}
+                src={previewUrl}
                 alt=""
-                className="w-full h-full pixelated animate-fade-in"
+                className="w-full h-full pixelated"
                 key={currentPreview}
               />
             ) : (
