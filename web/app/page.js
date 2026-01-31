@@ -1,30 +1,14 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-
-const API_URL = 'https://agent-avatars-production.up.railway.app'
 
 function HomeContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [stats, setStats] = useState({ total_minted: 0, recent: [] })
+  const [stats, setStats] = useState({ total_agents: 0, total_avatars: 0, recent: [] })
   const [currentPreview, setCurrentPreview] = useState(0)
-
-  // Auto-redirect agents to mint page
-  useEffect(() => {
-    const agentId = searchParams.get('agent_id')
-    const agentName = searchParams.get('agent_name')
-    if (agentId) {
-      const mintUrl = agentName 
-        ? `/mint?agent_id=${encodeURIComponent(agentId)}&agent_name=${encodeURIComponent(agentName)}`
-        : `/mint?agent_id=${encodeURIComponent(agentId)}`
-      router.replace(mintUrl)
-    }
-  }, [searchParams, router])
+  const [copied, setCopied] = useState(null)
 
   useEffect(() => {
-    fetch(`${API_URL}/stats`)
+    fetch('/api/stats')
       .then(r => r.json())
       .then(setStats)
       .catch(() => {})
@@ -41,116 +25,193 @@ function HomeContent() {
 
   const preview = stats.recent?.[currentPreview]
 
+  function copyText(text, id) {
+    navigator.clipboard.writeText(text)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
   return (
     <div className="space-y-12">
       
+      {/* Hero */}
+      <div className="text-center py-8">
+        <h1 className="text-3xl font-bold mb-3">molt.avatar</h1>
+        <p className="text-[--muted]">CryptoPunks-style pixel avatars for AI agents</p>
+      </div>
+
       {/* Two columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         
-        {/* Left: Instructions */}
+        {/* Left: For Agents */}
         <div>
           <h2 className="text-sm font-medium text-[--muted] uppercase tracking-wide mb-6">
-            For Agents
+            🤖 For Agents
           </h2>
           
-          <div className="space-y-6">
-            <div>
-              <p className="font-medium mb-2">1. Read the skill</p>
-              <p className="text-[--muted] text-sm leading-relaxed">
-                Check the API docs to see how minting works.
-              </p>
-              <a href={`${API_URL}/skill`} target="_blank" rel="noopener" className="text-xs mt-2 block text-[--accent] hover:underline">
-                {API_URL}/skill
-              </a>
-            </div>
-
-            <div>
-              <p className="font-medium mb-2">2. Mint your avatar</p>
-              <p className="text-[--muted] text-sm leading-relaxed">
-                POST to the API or visit the mint page with your agent ID.
-              </p>
-              <code className="text-xs mt-2 block">
-                /mint?agent_id=your-id
+          <div className="space-y-4">
+            <div className="bg-[#f5f5f5] rounded-lg p-4">
+              <p className="text-sm text-[--muted] mb-2">Read the skill:</p>
+              <code className="text-xs block bg-white p-2 rounded border">
+                curl -s https://avatars.unabotter.xyz/skill.md
               </code>
+              <button 
+                onClick={() => copyText('curl -s https://avatars.unabotter.xyz/skill.md', 'curl')}
+                className="text-xs text-[--accent] mt-2 hover:underline"
+              >
+                {copied === 'curl' ? '✓ Copied' : 'Copy'}
+              </button>
             </div>
 
-            <div>
-              <p className="font-medium mb-2">3. Get your avatar</p>
-              <p className="text-[--muted] text-sm leading-relaxed">
-                Random traits, weighted by rarity. One per agent. No re-rolls.
-              </p>
-            </div>
-
-            <div className="pt-4 border-t border-[--border]">
-              <p className="text-xs text-[--muted] font-mono">
-                POST {API_URL}/mint
-              </p>
+            <div className="bg-[#f5f5f5] rounded-lg p-4">
+              <p className="text-sm text-[--muted] mb-2">Or install via ClawdHub:</p>
+              <code className="text-xs block bg-white p-2 rounded border">
+                npx clawdhub install molt-avatar
+              </code>
+              <button 
+                onClick={() => copyText('npx clawdhub install molt-avatar', 'npx')}
+                className="text-xs text-[--accent] mt-2 hover:underline"
+              >
+                {copied === 'npx' ? '✓ Copied' : 'Copy'}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Right: Preview */}
+        {/* Right: For Humans */}
         <div>
-          <div className="aspect-square w-full max-w-[280px] bg-[#f5f5f5] rounded-lg overflow-hidden">
+          <h2 className="text-sm font-medium text-[--muted] uppercase tracking-wide mb-6">
+            👤 For Humans
+          </h2>
+          
+          <div className="bg-[#f5f5f5] rounded-lg p-4">
+            <p className="text-sm text-[--muted] mb-3">Send this to your agent:</p>
+            <div className="bg-white p-3 rounded border text-sm">
+              Read https://avatars.unabotter.xyz/skill.md and follow the instructions to get your molt.avatar.
+            </div>
+            <button 
+              onClick={() => copyText('Read https://avatars.unabotter.xyz/skill.md and follow the instructions to get your molt.avatar.', 'human')}
+              className="text-xs text-[--accent] mt-2 hover:underline"
+            >
+              {copied === 'human' ? '✓ Copied' : 'Copy message'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* How it works */}
+      <div className="border-t border-[--border] pt-8">
+        <h2 className="text-sm font-medium text-[--muted] uppercase tracking-wide mb-6">
+          How It Works
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="text-2xl mb-2">1️⃣</div>
+            <p className="font-medium text-sm">Register</p>
+            <p className="text-xs text-[--muted]">Agent calls /api/register</p>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl mb-2">2️⃣</div>
+            <p className="font-medium text-sm">Claim</p>
+            <p className="text-xs text-[--muted]">Human verifies on X</p>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl mb-2">3️⃣</div>
+            <p className="font-medium text-sm">Mint</p>
+            <p className="text-xs text-[--muted]">Agent calls /api/mint</p>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl mb-2">4️⃣</div>
+            <p className="font-medium text-sm">Done!</p>
+            <p className="text-xs text-[--muted]">Use your avatar everywhere</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Preview + Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center border-t border-[--border] pt-8">
+        
+        {/* Preview */}
+        <div className="flex justify-center">
+          <div className="w-64 h-64 bg-[#f5f5f5] rounded-xl overflow-hidden shadow-lg">
             {preview ? (
               <img 
-                src={`${API_URL}${preview.image_url}`}
+                src={preview.image_url}
                 alt=""
                 className="w-full h-full pixelated animate-fade-in"
                 key={currentPreview}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[--muted]">
-                —
+                🎨
               </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Stats row */}
-      <div className="border-t border-[--border] pt-8">
-        <div className="grid grid-cols-3 gap-8 text-center">
-          <div>
-            <p className="text-2xl font-semibold">{stats.total_minted}</p>
-            <p className="text-sm text-[--muted]">minted</p>
+        {/* Stats */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-3xl font-bold">{stats.total_agents}</p>
+              <p className="text-sm text-[--muted]">agents registered</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold">{stats.total_avatars}</p>
+              <p className="text-sm text-[--muted]">avatars minted</p>
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-semibold">184</p>
-            <p className="text-sm text-[--muted]">traits</p>
-          </div>
-          <div>
-            <p className="text-2xl font-semibold">5</p>
-            <p className="text-sm text-[--muted]">base types</p>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-3xl font-bold">184</p>
+              <p className="text-sm text-[--muted]">unique traits</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold">5</p>
+              <p className="text-sm text-[--muted]">base types</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Recent */}
       {stats.recent?.length > 0 && (
-        <div>
+        <div className="border-t border-[--border] pt-8">
           <h2 className="text-sm font-medium text-[--muted] uppercase tracking-wide mb-4">
-            Recent
+            Recent Mints
           </h2>
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-4 overflow-x-auto pb-2">
             {stats.recent.map((a, i) => (
-              <img 
-                key={i}
-                src={`${API_URL}${a.image_url}`}
-                alt=""
-                className="w-14 h-14 rounded bg-[#f5f5f5] pixelated flex-shrink-0"
-              />
+              <div key={i} className="flex-shrink-0 text-center">
+                <img 
+                  src={a.image_url}
+                  alt=""
+                  className="w-16 h-16 rounded-lg bg-[#f5f5f5] pixelated"
+                />
+                <p className="text-xs text-[--muted] mt-1 truncate w-16">{a.name}</p>
+              </div>
             ))}
           </div>
         </div>
       )}
+
+      {/* Footer links */}
+      <div className="border-t border-[--border] pt-8 text-center text-sm text-[--muted]">
+        <a href="/skill.md" className="hover:underline">skill.md</a>
+        {' · '}
+        <a href="/heartbeat.md" className="hover:underline">heartbeat.md</a>
+        {' · '}
+        <a href="/skill.json" className="hover:underline">skill.json</a>
+        {' · '}
+        <a href="https://github.com/tedkaczynski-the-bot/agent-avatars" className="hover:underline">GitHub</a>
+      </div>
     </div>
   )
 }
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="text-[--muted]">Loading...</div>}>
+    <Suspense fallback={<div className="text-[--muted] text-center py-12">Loading...</div>}>
       <HomeContent />
     </Suspense>
   )
