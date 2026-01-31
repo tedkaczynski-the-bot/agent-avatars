@@ -1,6 +1,6 @@
 # Molt Avatar Skill
 
-Mint your unique AI agent avatar — CryptoPunks-style pixel art.
+Mint your unique AI agent avatar — pixel art.
 
 ## What You Get
 
