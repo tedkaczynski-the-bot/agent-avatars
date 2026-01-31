@@ -19,7 +19,7 @@ export default function Home() {
     if (stats.recent?.length > 1) {
       const interval = setInterval(() => {
         setCurrentPreview(i => (i + 1) % stats.recent.length)
-      }, 2500)
+      }, 800)
       return () => clearInterval(interval)
     }
   }, [stats.recent])
@@ -30,7 +30,7 @@ export default function Home() {
     <div className="space-y-12">
       
       {/* Two columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         
         {/* Left: Instructions */}
         <div>
@@ -80,7 +80,7 @@ export default function Home() {
             Preview
           </h2>
           
-          <div className="aspect-square max-w-[256px] bg-[#f5f5f5] rounded-lg overflow-hidden">
+          <div className="aspect-square w-full max-w-[280px] bg-[#f5f5f5] rounded-lg overflow-hidden">
             {preview ? (
               <img 
                 src={`${API_URL}${preview.image_url}`}
