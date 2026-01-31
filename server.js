@@ -60,9 +60,15 @@ async function initDB() {
         agent_name VARCHAR(255),
         filename VARCHAR(255) NOT NULL,
         traits JSONB NOT NULL,
+        image_data TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    
+    // Add image_data column if missing (migration)
+    await client.query(`
+      ALTER TABLE avatars ADD COLUMN IF NOT EXISTS image_data TEXT
+    `).catch(() => {});
     
     console.log('Database initialized');
   } finally {
@@ -82,8 +88,35 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve generated images
-app.use('/images', express.static(GENERATED_DIR));
+// Serve generated images (try filesystem first, then database)
+app.get('/images/:filename', async (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(GENERATED_DIR, filename);
+  
+  // Try filesystem first
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  
+  // Fall back to database
+  try {
+    const result = await pool.query(
+      'SELECT image_data FROM avatars WHERE filename = $1',
+      [filename]
+    );
+    
+    if (result.rows.length > 0 && result.rows[0].image_data) {
+      const imageBuffer = Buffer.from(result.rows[0].image_data, 'base64');
+      res.set('Content-Type', 'image/png');
+      res.set('Cache-Control', 'public, max-age=31536000');
+      return res.send(imageBuffer);
+    }
+  } catch (err) {
+    console.error('Image fetch error:', err.message);
+  }
+  
+  res.status(404).send('Image not found');
+});
 
 // Auth middleware
 async function authMiddleware(req, res, next) {
@@ -191,11 +224,18 @@ async function generateAvatar() {
   
   const avatarId = uuidv4();
   const filename = `avatar_${avatarId}.png`;
-  await composite.png().toFile(path.join(GENERATED_DIR, filename));
+  
+  // Generate image buffer and base64
+  const imageBuffer = await composite.png().toBuffer();
+  const imageBase64 = imageBuffer.toString('base64');
+  
+  // Also save to disk (for local dev)
+  await composite.png().toFile(path.join(GENERATED_DIR, filename)).catch(() => {});
   
   return {
     id: avatarId,
     filename,
+    image_data: imageBase64,
     traits: Object.fromEntries(Object.entries(traits).filter(([_, v]) => v != null))
   };
 }
@@ -446,8 +486,8 @@ app.post('/api/claim/:token/mint', async (req, res) => {
     // Generate and save avatar
     const avatar = await generateAvatar();
     await pool.query(
-      `INSERT INTO avatars (id, agent_id, agent_name, filename, traits) VALUES ($1, $2, $3, $4, $5)`,
-      [avatar.id, agent.id, agent.name, avatar.filename, avatar.traits]
+      `INSERT INTO avatars (id, agent_id, agent_name, filename, traits, image_data) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [avatar.id, agent.id, agent.name, avatar.filename, avatar.traits, avatar.image_data]
     );
     
     res.json({
@@ -498,8 +538,8 @@ app.post('/api/mint', authMiddleware, async (req, res) => {
     const avatar = await generateAvatar();
     
     await pool.query(
-      `INSERT INTO avatars (id, agent_id, agent_name, filename, traits) VALUES ($1, $2, $3, $4, $5)`,
-      [avatar.id, agent.id, agent.name, avatar.filename, avatar.traits]
+      `INSERT INTO avatars (id, agent_id, agent_name, filename, traits, image_data) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [avatar.id, agent.id, agent.name, avatar.filename, avatar.traits, avatar.image_data]
     );
     
     res.json({
