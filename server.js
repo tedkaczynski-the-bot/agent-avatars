@@ -168,8 +168,24 @@ app.get('/skill.json', (req, res) => {
   }
 });
 
-// Rarity weights
+// Rarity weights (for generation probability)
 const RARITY_WEIGHTS = { common: 60, uncommon: 25, rare: 12, legendary: 3 };
+
+// Rarity scores (for display - higher = rarer)
+const RARITY_SCORES = { common: 1, uncommon: 3, rare: 8, legendary: 25 };
+
+function calculateRarityScore(traits) {
+  let score = 0;
+  for (const [category, filename] of Object.entries(traits)) {
+    if (!filename) continue;
+    const parts = filename.replace('.png', '').split('_');
+    const rarity = ['common', 'uncommon', 'rare', 'legendary'].includes(parts[parts.length - 1]) 
+      ? parts[parts.length - 1] 
+      : 'common';
+    score += RARITY_SCORES[rarity] || 1;
+  }
+  return score;
+}
 
 function getTraits(category) {
   const dir = path.join(ASSETS_DIR, category);
@@ -323,7 +339,7 @@ app.get('/api/agents/status', authMiddleware, async (req, res) => {
     has_avatar: !!avatar,
     avatar: avatar ? {
       image_url: `/images/${avatar.filename}`,
-      traits: avatar.traits,
+      traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits),
       created_at: avatar.created_at
     } : null,
     next_action: !agent.claimed_at 
@@ -470,7 +486,7 @@ app.post('/api/claim/:token/mint', async (req, res) => {
         agent_name: agent.name,
         avatar: {
           image_url: `/images/${avatar.filename}`,
-          traits: avatar.traits
+          traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits)
         }
       });
     }
@@ -496,7 +512,7 @@ app.post('/api/claim/:token/mint', async (req, res) => {
       avatar: {
         id: avatar.id,
         image_url: `/images/${avatar.filename}`,
-        traits: avatar.traits
+        traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits)
       }
     });
     
@@ -528,7 +544,7 @@ app.post('/api/mint', authMiddleware, async (req, res) => {
         avatar: {
           image_url: `/images/${avatar.filename}`,
           full_url: `${BASE_URL}/images/${avatar.filename}`,
-          traits: avatar.traits,
+          traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits),
           created_at: avatar.created_at
         }
       });
@@ -549,7 +565,7 @@ app.post('/api/mint', authMiddleware, async (req, res) => {
         id: avatar.id,
         image_url: `/images/${avatar.filename}`,
         full_url: `${BASE_URL}/images/${avatar.filename}`,
-        traits: avatar.traits
+        traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits)
       }
     });
     
@@ -591,7 +607,7 @@ app.get('/api/avatar/:name', async (req, res) => {
       name: agent.name,
       image_url: `/images/${avatar.filename}`,
       full_url: `${BASE_URL}/images/${avatar.filename}`,
-      traits: avatar.traits,
+      traits: avatar.traits, rarity_score: calculateRarityScore(avatar.traits),
       created_at: avatar.created_at
     });
   } catch (err) {
@@ -689,6 +705,7 @@ app.get('/api/stats', async (req, res) => {
         recent.push({
           name: av.agent_name,
           image_url: `/images/${av.filename}`,
+          rarity_score: calculateRarityScore(av.traits || {}),
           created_at: av.created_at
         });
       }
