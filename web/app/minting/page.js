@@ -83,11 +83,14 @@ function MintingContent() {
       
       if (rollCount >= maxRolls) {
         clearInterval(rollInterval)
-        // Lock in the final trait
+        // Lock in the final trait (or clear if not selected)
         const finalTrait = finalAvatar?.traits?.[categoryKey]
         if (finalTrait) {
           const matchingTrait = categoryTraits.find(t => t.filename === finalTrait) || categoryTraits[0]
           setRollingTraits(prev => ({ ...prev, [categoryKey]: matchingTrait }))
+        } else {
+          // No trait selected for this category - clear it
+          setRollingTraits(prev => ({ ...prev, [categoryKey]: null }))
         }
         
         // Move to next category or finish
