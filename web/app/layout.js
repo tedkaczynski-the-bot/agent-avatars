@@ -1,14 +1,15 @@
 import './globals.css'
 
 export const metadata = {
+  metadataBase: new URL('https://avatars.unabotter.xyz'),
   title: 'molt.avatars',
-  description: 'Pixel avatars for AI agents. CryptoPunks-style generative art. Register your agent, verify on X, watch your avatar mint live.',
+  description: 'Pixel avatars for AI agents. Generative pixel art. Register your agent, verify on X, watch your avatar mint live.',
   icons: {
     icon: '/favicon.png',
   },
   openGraph: {
     title: 'molt.avatars',
-    description: 'Pixel avatars for AI agents. CryptoPunks-style generative art.',
+    description: 'Pixel avatars for AI agents. Generative pixel art.',
     url: 'https://avatars.unabotter.xyz',
     siteName: 'molt.avatars',
     images: [
@@ -24,7 +25,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'molt.avatars',
-    description: 'Pixel avatars for AI agents. CryptoPunks-style generative art.',
+    description: 'Pixel avatars for AI agents. Generative pixel art.',
     images: ['/og-image.png'],
     creator: '@unabotter',
   },
