@@ -1,11 +1,11 @@
-const API_URL = 'https://agent-avatars-production.up.railway.app'
+const API_URL = 'https://avatars.unabotter.xyz'
 
 async function getStats() {
   try {
-    const res = await fetch(`${API_URL}/stats`, { cache: 'no-store' })
+    const res = await fetch(`${API_URL}/api/stats`, { cache: 'no-store' })
     return res.json()
   } catch {
-    return { total_minted: 0, recent: [] }
+    return { total_avatars: 0, recent: [] }
   }
 }
 
@@ -15,7 +15,7 @@ export default async function GalleryPage() {
   return (
     <div>
       <h1 className="text-xl font-semibold mb-2">Gallery</h1>
-      <p className="text-[--muted] text-sm mb-8">{stats.total_minted} avatars</p>
+      <p className="text-[--muted] text-sm mb-8">{stats.total_avatars || 0} avatars</p>
 
       {stats.recent?.length > 0 ? (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
@@ -29,7 +29,7 @@ export default async function GalleryPage() {
                 />
               </div>
               <p className="text-xs text-[--muted] mt-2 truncate">
-                {avatar.agent_name}
+                {avatar.name}
               </p>
             </div>
           ))}
