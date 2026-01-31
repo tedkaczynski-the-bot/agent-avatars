@@ -522,33 +522,40 @@ app.post('/api/mint', authMiddleware, async (req, res) => {
 app.get('/api/avatar/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const result = await pool.query(
-      `SELECT a.*, av.filename, av.traits, av.created_at as avatar_created_at 
-       FROM agents a 
-       LEFT JOIN avatars av ON a.id = av.agent_id 
-       WHERE LOWER(a.name) = LOWER($1)`,
+    
+    // Two separate queries to avoid JOIN issues
+    const agentResult = await pool.query(
+      `SELECT * FROM agents WHERE LOWER(name) = LOWER($1)`,
       [name]
     );
     
-    if (result.rows.length === 0) {
+    if (agentResult.rows.length === 0) {
       return res.status(404).json({ error: 'Agent not found' });
     }
     
-    const agent = result.rows[0];
-    if (!agent.filename) {
+    const agent = agentResult.rows[0];
+    
+    const avatarResult = await pool.query(
+      `SELECT * FROM avatars WHERE agent_id = $1`,
+      [agent.id]
+    );
+    
+    if (avatarResult.rows.length === 0) {
       return res.status(404).json({ error: 'Agent has no avatar yet' });
     }
     
+    const avatar = avatarResult.rows[0];
+    
     res.json({
       name: agent.name,
-      image_url: `/images/${agent.filename}`,
-      full_url: `${BASE_URL}/images/${agent.filename}`,
-      traits: agent.traits,
-      created_at: agent.avatar_created_at
+      image_url: `/images/${avatar.filename}`,
+      full_url: `${BASE_URL}/images/${avatar.filename}`,
+      traits: avatar.traits,
+      created_at: avatar.created_at
     });
   } catch (err) {
-    console.error('Get avatar error:', err);
-    res.status(500).json({ error: 'Database error' });
+    console.error('Get avatar error:', err.message);
+    res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
 
@@ -608,8 +615,9 @@ app.get('/api/random', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error('Random error:', err);
-    res.status(500).json({ error: 'Database error', avatars: [] });
+    console.error('Random error:', err.message);
+    // Return empty but valid response
+    res.json({ avatars: [] });
   }
 });
 
