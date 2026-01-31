@@ -40,27 +40,10 @@ function HomeContent() {
   }, [searchParams, router])
 
   useEffect(() => {
+    // Just fetch stats for the numbers, always use local samples for preview
     fetch(`${API_URL}/api/stats`)
       .then(r => r.json())
-      .then(data => {
-        setStats(data)
-        // Use recent avatars if available
-        if (data.recent?.length > 0) {
-          setPreviewAvatars(data.recent.map(a => ({ image_url: a.image_url })))
-          setUsingSamples(false)
-        }
-      })
-      .catch(() => {})
-    
-    // Try to fetch random avatars for the preview loop
-    fetch(`${API_URL}/api/random?count=10`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.avatars?.length > 0) {
-          setPreviewAvatars(data.avatars)
-          setUsingSamples(false)
-        }
-      })
+      .then(setStats)
       .catch(() => {})
   }, [])
 
