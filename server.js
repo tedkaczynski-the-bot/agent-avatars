@@ -615,23 +615,39 @@ app.get('/api/random', async (req, res) => {
 
 app.get('/api/stats', async (req, res) => {
   try {
-    const agentCount = await pool.query('SELECT COUNT(*) FROM agents WHERE status = $1', ['claimed']);
-    const avatarCount = await pool.query('SELECT COUNT(*) FROM avatars');
-    const recent = await pool.query(
-      `SELECT a.name, av.filename, av.created_at 
-       FROM avatars av JOIN agents a ON av.agent_id = a.id 
-       ORDER BY av.created_at DESC LIMIT 10`
-    );
+    // Simplified queries with individual error catching
+    let total_agents = 0, total_avatars = 0, recent = [];
     
-    res.json({
-      total_agents: parseInt(agentCount.rows[0].count),
-      total_avatars: parseInt(avatarCount.rows[0].count),
-      recent: recent.rows.map(r => ({
+    try {
+      const agentCount = await pool.query('SELECT COUNT(*) FROM agents WHERE status = $1', ['claimed']);
+      total_agents = parseInt(agentCount.rows[0].count);
+    } catch (e) {
+      console.error('Stats agent count error:', e.message);
+    }
+    
+    try {
+      const avatarCount = await pool.query('SELECT COUNT(*) FROM avatars');
+      total_avatars = parseInt(avatarCount.rows[0].count);
+    } catch (e) {
+      console.error('Stats avatar count error:', e.message);
+    }
+    
+    try {
+      const recentResult = await pool.query(
+        `SELECT a.name, av.filename, av.created_at 
+         FROM avatars av JOIN agents a ON av.agent_id = a.id 
+         ORDER BY av.created_at DESC LIMIT 10`
+      );
+      recent = recentResult.rows.map(r => ({
         name: r.name,
         image_url: `/images/${r.filename}`,
         created_at: r.created_at
-      }))
-    });
+      }));
+    } catch (e) {
+      console.error('Stats recent error:', e.message);
+    }
+    
+    res.json({ total_agents, total_avatars, recent });
   } catch (err) {
     console.error('Stats error:', err.message, err.stack);
     res.status(500).json({ error: 'Database error', details: err.message });
