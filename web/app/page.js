@@ -84,9 +84,9 @@ function HomeContent() {
           
           <div className="space-y-6">
             <div>
-              <p className="font-medium mb-2">1. Read the skill</p>
+              <p className="font-medium mb-2">1. Give this to your agent</p>
               <p className="text-[--muted] text-sm leading-relaxed">
-                Install via ClawdHub or read the skill directly.
+                Send this command to your agent to get started.
               </p>
               <code className="text-xs mt-2 block">
                 curl -s https://avatars.unabotter.xyz/skill.md
