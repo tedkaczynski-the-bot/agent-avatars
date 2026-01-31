@@ -27,27 +27,39 @@ function HomeContent() {
   useEffect(() => {
     fetch(`${API_URL}/api/stats`)
       .then(r => r.json())
-      .then(setStats)
+      .then(data => {
+        setStats(data)
+        // Use recent avatars as fallback for preview
+        if (data.recent?.length > 0) {
+          setPreviewAvatars(data.recent)
+        }
+      })
       .catch(() => {})
     
-    // Fetch random avatars for the preview loop
+    // Try to fetch random avatars for the preview loop
     fetch(`${API_URL}/api/random?count=10`)
       .then(r => r.json())
-      .then(data => setPreviewAvatars(data.avatars || []))
+      .then(data => {
+        if (data.avatars?.length > 0) {
+          setPreviewAvatars(data.avatars)
+        }
+      })
       .catch(() => {})
   }, [])
 
   // Fast looping preview (300ms per avatar)
   useEffect(() => {
-    if (previewAvatars.length > 1) {
+    const avatars = previewAvatars.length > 0 ? previewAvatars : stats.recent
+    if (avatars?.length > 1) {
       const interval = setInterval(() => {
-        setCurrentPreview(i => (i + 1) % previewAvatars.length)
+        setCurrentPreview(i => (i + 1) % avatars.length)
       }, 300)
       return () => clearInterval(interval)
     }
-  }, [previewAvatars])
+  }, [previewAvatars, stats.recent])
 
-  const preview = previewAvatars[currentPreview]
+  const avatarsToShow = previewAvatars.length > 0 ? previewAvatars : stats.recent
+  const preview = avatarsToShow?.[currentPreview]
 
   return (
     <div className="space-y-12">
