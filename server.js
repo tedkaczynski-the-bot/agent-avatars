@@ -633,8 +633,8 @@ app.get('/api/stats', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error('Stats error:', err);
-    res.status(500).json({ error: 'Database error' });
+    console.error('Stats error:', err.message, err.stack);
+    res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
 
