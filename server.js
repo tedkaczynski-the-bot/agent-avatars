@@ -602,21 +602,18 @@ app.get('/api/random', async (req, res) => {
   try {
     const count = Math.min(parseInt(req.query.count) || 10, 20);
     const result = await pool.query(
-      `SELECT a.name, av.filename 
-       FROM avatars av JOIN agents a ON av.agent_id = a.id 
-       ORDER BY RANDOM() LIMIT $1`,
+      `SELECT agent_name, filename FROM avatars ORDER BY RANDOM() LIMIT $1`,
       [count]
     );
     
     res.json({
       avatars: result.rows.map(r => ({
-        name: r.name,
+        name: r.agent_name,
         image_url: `/images/${r.filename}`
       }))
     });
   } catch (err) {
     console.error('Random error:', err.message);
-    // Return empty but valid response
     res.json({ avatars: [] });
   }
 });
@@ -641,16 +638,19 @@ app.get('/api/stats', async (req, res) => {
     }
     
     try {
-      const recentResult = await pool.query(
-        `SELECT a.name, av.filename, av.created_at 
-         FROM avatars av JOIN agents a ON av.agent_id = a.id 
-         ORDER BY av.created_at DESC LIMIT 10`
+      // Get recent avatars
+      const avatarsResult = await pool.query(
+        `SELECT * FROM avatars ORDER BY created_at DESC LIMIT 10`
       );
-      recent = recentResult.rows.map(r => ({
-        name: r.name,
-        image_url: `/images/${r.filename}`,
-        created_at: r.created_at
-      }));
+      
+      // Get agent names for each avatar
+      for (const av of avatarsResult.rows) {
+        recent.push({
+          name: av.agent_name,
+          image_url: `/images/${av.filename}`,
+          created_at: av.created_at
+        });
+      }
     } catch (e) {
       console.error('Stats recent error:', e.message);
     }
