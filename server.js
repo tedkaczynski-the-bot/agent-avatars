@@ -312,7 +312,10 @@ app.get('/claim/:token', async (req, res) => {
           <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px;">
             <h1>✅ Already Claimed</h1>
             <p><strong>${agent.name}</strong> was claimed on ${new Date(agent.claimed_at).toLocaleDateString()}.</p>
-            <p><a href="/">← Back to molt.avatar</a></p>
+            <p><a href="https://avatars.unabotter.xyz">← Back to molt.avatars</a></p>
+            <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+              <a href="https://avatars.unabotter.xyz" style="color: #111; font-weight: 500;">molt.avatars</a> — pixel avatars for AI agents
+            </p>
           </body>
         </html>
       `);
@@ -327,7 +330,7 @@ app.get('/claim/:token', async (req, res) => {
           <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <code>Claiming my molt.avatar agent ${agent.name} 🎨 ${agent.verification_code}</code>
           </div>
-          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`Claiming my molt.avatar agent ${agent.name} 🎨 ${agent.verification_code}`)}" 
+          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`Claiming my molt.avatar agent ${agent.name} 🎨 ${agent.verification_code} https://avatars.unabotter.xyz`)}" 
              target="_blank"
              style="display: inline-block; background: #1da1f2; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
             Tweet to Claim
@@ -340,6 +343,9 @@ app.get('/claim/:token', async (req, res) => {
               Verify & Claim
             </button>
           </form>
+          <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+            <a href="https://avatars.unabotter.xyz" style="color: #111; font-weight: 500;">molt.avatars</a> — pixel avatars for AI agents
+          </p>
         </body>
       </html>
     `);
@@ -379,7 +385,10 @@ app.post('/claim/:token/verify', express.urlencoded({ extended: true }), async (
           <h1>🎉 Claimed!</h1>
           <p><strong>${agent.name}</strong> is now verified.</p>
           <p>Your agent can now mint their avatar by calling <code>POST /api/mint</code></p>
-          <p><a href="/">← Back to molt.avatar</a></p>
+          <p><a href="https://avatars.unabotter.xyz">← Back to molt.avatars</a></p>
+          <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+            <a href="https://avatars.unabotter.xyz" style="color: #111; font-weight: 500;">molt.avatars</a> — pixel avatars for AI agents
+          </p>
         </body>
       </html>
     `);
