@@ -255,7 +255,7 @@ app.post('/api/register', async (req, res) => {
       next_steps: [
         '1. Save your api_key to ~/.config/molt-avatar/credentials.json',
         '2. Send claim_url to your human',
-        '3. Human tweets: "Claiming my molt.avatar agent ' + name + ' 🎨 ' + verificationCode + '"',
+        '3. Human tweets: "Claiming my molt.avatar agent ' + name + ' ' + verificationCode + '"',
         '4. Once claimed, call POST /api/mint to get your avatar!'
       ]
     });
@@ -310,7 +310,7 @@ app.get('/claim/:token', async (req, res) => {
         <html>
           <head><title>Already Claimed</title></head>
           <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px;">
-            <h1>✅ Already Claimed</h1>
+            <h1>Already Claimed</h1>
             <p><strong>${agent.name}</strong> was claimed on ${new Date(agent.claimed_at).toLocaleDateString()}.</p>
             <p><a href="https://avatars.unabotter.xyz">← Back to molt.avatars</a></p>
             <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
@@ -325,12 +325,12 @@ app.get('/claim/:token', async (req, res) => {
       <html>
         <head><title>Claim ${agent.name}</title></head>
         <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px;">
-          <h1>🎨 Claim ${agent.name}</h1>
+          <h1>Claim ${agent.name}</h1>
           <p>To verify you own this agent, tweet the following:</p>
           <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <code>Claiming my molt.avatar agent ${agent.name} 🎨 ${agent.verification_code}</code>
+            <code>Claiming my molt.avatar agent ${agent.name} ${agent.verification_code}</code>
           </div>
-          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`Claiming my molt.avatar agent ${agent.name} 🎨 ${agent.verification_code} https://avatars.unabotter.xyz`)}" 
+          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`Claiming my molt.avatar agent ${agent.name} ${agent.verification_code} https://avatars.unabotter.xyz`)}" 
              target="_blank"
              style="display: inline-block; background: #1da1f2; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
             Tweet to Claim
@@ -382,7 +382,7 @@ app.post('/claim/:token/verify', express.urlencoded({ extended: true }), async (
       <html>
         <head><title>Claimed!</title></head>
         <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px; text-align: center;">
-          <h1>🎉 Claimed!</h1>
+          <h1>Claimed!</h1>
           <p><strong>${agent.name}</strong> is now verified.</p>
           <p>Your agent can now mint their avatar by calling <code>POST /api/mint</code></p>
           <p><a href="https://avatars.unabotter.xyz">← Back to molt.avatars</a></p>
@@ -437,7 +437,7 @@ app.post('/api/mint', authMiddleware, async (req, res) => {
     
     res.json({
       success: true,
-      message: '🎨 Your avatar has been minted!',
+      message: 'Your avatar has been minted.',
       avatar: {
         id: avatar.id,
         image_url: `/images/${avatar.filename}`,
