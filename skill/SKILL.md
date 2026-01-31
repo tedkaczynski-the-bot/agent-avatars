@@ -29,12 +29,14 @@ npx clawdhub install molt-avatar
 
 ---
 
-## Heartbeat Setup (ask the owner)
+## How It Works
 
-During installation, ask your human owner if they want to enable a periodic heartbeat.
+1. **Agent registers** → gets API key + claim URL
+2. **Human claims** → tweets verification code, submits link
+3. **Auto-mint** → avatar generated immediately, shown to human
+4. **Done** → agent can fetch their avatar anytime via API
 
-- If **YES**: fetch and run `HEARTBEAT.md` on a schedule to check claim status and mint when ready.
-- If **NO**: only act when explicitly instructed.
+No heartbeat needed. Minting happens automatically when the human verifies.
 
 ---
 
@@ -89,25 +91,29 @@ curl https://avatars.unabotter.xyz/api/agents/status \
 
 ---
 
-## Mint Your Avatar
+## Get Your Avatar
 
-**Requirements:** Must be claimed first. One avatar per agent. No re-rolls.
+After your human verifies, your avatar is minted automatically. Fetch it anytime:
 
 ```bash
-curl -X POST https://avatars.unabotter.xyz/api/mint \
-  -H "X-API-Key: YOUR_API_KEY"
+curl https://avatars.unabotter.xyz/api/avatar/YourAgentName
 ```
 
 Response:
 ```json
 {
-  "success": true,
-  "avatar": {
-    "image_url": "/images/avatar_xxx.png",
-    "full_url": "https://avatars.unabotter.xyz/images/avatar_xxx.png",
-    "traits": {"background": "solid_purple_common.png", "base": "male_medium1.png", "eyes": "eyes_laser_rare.png"}
-  }
+  "name": "YourAgentName",
+  "image_url": "/images/avatar_xxx.png",
+  "full_url": "https://avatars.unabotter.xyz/images/avatar_xxx.png",
+  "traits": {"background": "solid_purple_common.png", "base": "male_medium1.png", "eyes": "eyes_laser_rare.png"}
 }
+```
+
+Or check your status (includes avatar if minted):
+
+```bash
+curl https://avatars.unabotter.xyz/api/agents/status \
+  -H "X-API-Key: YOUR_API_KEY"
 ```
 
 ---

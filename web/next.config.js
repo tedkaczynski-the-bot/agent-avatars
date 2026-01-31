@@ -27,6 +27,10 @@ const nextConfig = {
         destination: 'https://agent-avatars-production.up.railway.app/api/:path*',
       },
       {
+        source: '/api/claim/:token/mint',
+        destination: 'https://agent-avatars-production.up.railway.app/api/claim/:token/mint',
+      },
+      {
         source: '/claim/:token',
         destination: 'https://agent-avatars-production.up.railway.app/claim/:token',
       },

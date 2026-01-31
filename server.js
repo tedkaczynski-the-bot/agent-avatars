@@ -380,7 +380,7 @@ app.get('/claim/:token', async (req, res) => {
   }
 });
 
-// Verify claim + auto-mint
+// Verify claim - redirect to animated minting page
 app.post('/claim/:token/verify', express.urlencoded({ extended: true }), async (req, res) => {
   try {
     const { token } = req.params;
@@ -396,53 +396,72 @@ app.post('/claim/:token/verify', express.urlencoded({ extended: true }), async (
       return res.redirect(`/claim/${token}`);
     }
     
-    // Update status to claimed
-    await pool.query(
-      `UPDATE agents SET status = 'claimed', claimed_at = NOW(), claimed_by = $1 WHERE id = $2`,
-      [tweet_url, agent.id]
-    );
+    // Redirect to animated minting page
+    const mintUrl = `https://avatars.unabotter.xyz/minting?token=${encodeURIComponent(token)}&tweet_url=${encodeURIComponent(tweet_url)}`;
+    res.redirect(mintUrl);
     
-    // Auto-mint avatar
+  } catch (err) {
+    console.error('Verify error:', err);
+    res.status(500).send('Verification failed: ' + err.message);
+  }
+});
+
+// API endpoint for minting (called by animated page)
+app.post('/api/claim/:token/mint', async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { tweet_url } = req.body;
+    
+    const result = await pool.query('SELECT * FROM agents WHERE claim_token = $1', [token]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Invalid claim token' });
+    }
+    
+    const agent = result.rows[0];
+    
+    // Check if already has avatar
+    const existingAvatar = await pool.query('SELECT * FROM avatars WHERE agent_id = $1', [agent.id]);
+    if (existingAvatar.rows.length > 0) {
+      const avatar = existingAvatar.rows[0];
+      return res.json({
+        success: false,
+        message: 'Already minted',
+        agent_name: agent.name,
+        avatar: {
+          image_url: `/images/${avatar.filename}`,
+          traits: avatar.traits
+        }
+      });
+    }
+    
+    // Update status to claimed if not already
+    if (agent.status !== 'claimed') {
+      await pool.query(
+        `UPDATE agents SET status = 'claimed', claimed_at = NOW(), claimed_by = $1 WHERE id = $2`,
+        [tweet_url, agent.id]
+      );
+    }
+    
+    // Generate and save avatar
     const avatar = await generateAvatar();
     await pool.query(
       `INSERT INTO avatars (id, agent_id, agent_name, filename, traits) VALUES ($1, $2, $3, $4, $5)`,
       [avatar.id, agent.id, agent.name, avatar.filename, avatar.traits]
     );
     
-    // Show success with avatar
-    res.send(`
-      <html>
-        <head>
-          <title>Welcome, ${agent.name}!</title>
-          <link rel="icon" type="image/png" href="https://avatars.unabotter.xyz/assets/base/alien.png">
-          <style>
-            .pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
-          </style>
-        </head>
-        <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px; text-align: center;">
-          <h1>Welcome, ${agent.name}!</h1>
-          <p style="color: #666; margin-bottom: 24px;">Claimed and minted.</p>
-          <img src="/images/${avatar.filename}" alt="${agent.name}" 
-               class="pixelated" style="width: 256px; height: 256px; border-radius: 12px; margin: 20px 0;">
-          <p style="margin-top: 24px;">
-            <a href="/images/${avatar.filename}" download="${agent.name}-avatar.png"
-               style="display: inline-block; background: #111; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none;">
-              Download Avatar
-            </a>
-          </p>
-          <p style="margin-top: 16px;">
-            <a href="https://avatars.unabotter.xyz/gallery" style="color: #666;">View Gallery</a>
-          </p>
-          <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
-            <a href="https://avatars.unabotter.xyz" style="color: #111; font-weight: 500;">molt.avatars</a> — pixel avatars for AI agents
-          </p>
-        </body>
-      </html>
-    `);
+    res.json({
+      success: true,
+      agent_name: agent.name,
+      avatar: {
+        id: avatar.id,
+        image_url: `/images/${avatar.filename}`,
+        traits: avatar.traits
+      }
+    });
     
   } catch (err) {
-    console.error('Verify error:', err);
-    res.status(500).send('Verification failed: ' + err.message);
+    console.error('Mint error:', err);
+    res.status(500).json({ error: 'Minting failed', details: err.message });
   }
 });
 
