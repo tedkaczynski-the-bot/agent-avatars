@@ -1,0 +1,241 @@
+[
+  {
+    "id": 1,
+    "base": "male_dark3.png",
+    "background": "solid_dark_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_gold_teeth_rare.png",
+      "hair": "hair_curly_brown_common.png",
+      "accessories": "accessory_earring_both_hoops_uncommon.png"
+    },
+    "filename": "punk_0001.png"
+  },
+  {
+    "id": 2,
+    "base": "male_light3.png",
+    "background": "solid_mint_common.png",
+    "traits": {
+      "eyes": "eyes_tired_uncommon.png",
+      "mouth": "mouth_neutral_common.png",
+      "hair": "hair_long_black_common.png",
+      "accessories": "accessory_earring_silver_stud_common.png"
+    },
+    "filename": "punk_0002.png"
+  },
+  {
+    "id": 3,
+    "base": "female_light2.png",
+    "background": "solid_blue_common.png",
+    "traits": {
+      "eyes": "eyes_wide_common.png",
+      "hair": "hair_messy_auburn_common.png",
+      "eyewear": "eyewear_glasses_common.png"
+    },
+    "filename": "punk_0003.png"
+  },
+  {
+    "id": 4,
+    "base": "male_light3.png",
+    "background": "solid_lemon_common.png",
+    "traits": {
+      "eyes": "eyes_narrow_common.png",
+      "hair": "hair_cap_hair_brown_common.png",
+      "eyewear": "eyewear_3d_glasses_uncommon.png",
+      "accessories": "accessory_earring_both_gold_common.png"
+    },
+    "filename": "punk_0004.png"
+  },
+  {
+    "id": 5,
+    "base": "male_dark1.png",
+    "background": "solid_green_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_open_uncommon.png",
+      "hair": "hair_messy_auburn_common.png",
+      "headwear": "headwear_cap_red_common.png",
+      "accessories": "accessory_face_tattoo_rare.png"
+    },
+    "filename": "punk_0005.png"
+  },
+  {
+    "id": 6,
+    "base": "male_dark3.png",
+    "background": "solid_lavender_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_tongue_uncommon.png",
+      "hair": "hair_messy_brown_common.png"
+    },
+    "filename": "punk_0006.png"
+  },
+  {
+    "id": 7,
+    "base": "male_light3.png",
+    "background": "solid_navy_common.png",
+    "traits": {
+      "eyes": "eyes_heart_rare.png",
+      "mouth": "mouth_lipstick_common.png",
+      "hair": "hair_long_blonde_common.png",
+      "headwear": "headwear_headband_red_common.png"
+    },
+    "filename": "punk_0007.png"
+  },
+  {
+    "id": 8,
+    "base": "male_medium1.png",
+    "background": "solid_salmon_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_big_smile_common.png",
+      "hair": "hair_short_blonde_common.png",
+      "headwear": "headwear_cap_backwards_uncommon.png"
+    },
+    "filename": "punk_0008.png"
+  },
+  {
+    "id": 9,
+    "base": "male_medium1.png",
+    "background": "solid_navy_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "hair": "hair_short_blonde_common.png"
+    },
+    "filename": "punk_0009.png"
+  },
+  {
+    "id": 10,
+    "base": "male_medium1.png",
+    "background": "solid_sky_common.png",
+    "traits": {
+      "eyes": "eyes_angry_uncommon.png",
+      "mouth": "mouth_open_uncommon.png",
+      "hair": "hair_bangs_black_common.png",
+      "eyewear": "eyewear_aviators_uncommon.png",
+      "accessories": "accessory_earring_silver_hoop_uncommon.png"
+    },
+    "filename": "punk_0010.png"
+  },
+  {
+    "id": 11,
+    "base": "female_dark2.png",
+    "background": "solid_mint_common.png",
+    "traits": {
+      "eyes": "eyes_tired_uncommon.png",
+      "mouth": "mouth_lipstick_common.png",
+      "headwear": "headwear_top_hat_rare.png"
+    },
+    "filename": "punk_0011.png"
+  },
+  {
+    "id": 12,
+    "base": "alien.png",
+    "background": "solid_lavender_common.png",
+    "traits": {
+      "eyes": "eyes_narrow_common.png",
+      "mouth": "mouth_vape_uncommon.png",
+      "hair": "hair_messy_brown_common.png",
+      "eyewear": "eyewear_aviators_uncommon.png"
+    },
+    "filename": "punk_0012.png"
+  },
+  {
+    "id": 13,
+    "base": "male_dark1.png",
+    "background": "solid_pink_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_tongue_uncommon.png",
+      "hair": "hair_long_black_common.png",
+      "accessories": "accessory_earring_gold_stud_common.png"
+    },
+    "filename": "punk_0013.png"
+  },
+  {
+    "id": 14,
+    "base": "male_dark1.png",
+    "background": "solid_sky_common.png",
+    "traits": {
+      "eyes": "eyes_angry_uncommon.png",
+      "mouth": "mouth_neutral_common.png",
+      "hair": "hair_curly_blonde_common.png"
+    },
+    "filename": "punk_0014.png"
+  },
+  {
+    "id": 15,
+    "base": "female_medium2.png",
+    "background": "solid_orange_common.png",
+    "traits": {
+      "eyes": "eyes_side_common.png",
+      "mouth": "mouth_neutral_common.png",
+      "hair": "hair_curly_blonde_common.png",
+      "eyewear": "eyewear_clout_goggles_uncommon.png",
+      "headwear": "headwear_headband_red_common.png",
+      "accessories": "accessory_lip_ring_uncommon.png"
+    },
+    "filename": "punk_0015.png"
+  },
+  {
+    "id": 16,
+    "base": "female_medium3.png",
+    "background": "solid_purple_common.png",
+    "traits": {
+      "eyes": "eyes_regular_common.png",
+      "mouth": "mouth_open_uncommon.png",
+      "hair": "hair_afro_female_brown_uncommon.png",
+      "headwear": "headwear_headband_white_common.png",
+      "accessories": "accessory_lip_ring_uncommon.png"
+    },
+    "filename": "punk_0016.png"
+  },
+  {
+    "id": 17,
+    "base": "female_medium1.png",
+    "background": "solid_sky_common.png",
+    "traits": {
+      "eyes": "eyes_crying_uncommon.png",
+      "mouth": "mouth_tongue_uncommon.png",
+      "hair": "hair_buzz_black_common.png",
+      "headwear": "headwear_party_hat_uncommon.png"
+    },
+    "filename": "punk_0017.png"
+  },
+  {
+    "id": 18,
+    "base": "ape.png",
+    "background": "solid_lavender_common.png",
+    "traits": {
+      "eyes": "eyes_purple_uncommon.png",
+      "mouth": "mouth_open_uncommon.png",
+      "hair": "hair_messy_brown_common.png",
+      "accessories": "accessory_earring_cross_uncommon.png"
+    },
+    "filename": "punk_0018.png"
+  },
+  {
+    "id": 19,
+    "base": "male_medium1.png",
+    "background": "solid_sky_common.png",
+    "traits": {
+      "eyes": "eyes_narrow_common.png",
+      "mouth": "mouth_gold_teeth_rare.png",
+      "hair": "hair_messy_auburn_common.png",
+      "eyewear": "eyewear_clout_goggles_uncommon.png",
+      "headwear": "headwear_cap_blue_common.png"
+    },
+    "filename": "punk_0019.png"
+  },
+  {
+    "id": 20,
+    "base": "female_medium2.png",
+    "background": "solid_teal_common.png",
+    "traits": {
+      "eyes": "eyes_narrow_common.png",
+      "mouth": "mouth_open_uncommon.png",
+      "hair": "hair_messy_brown_common.png"
+    },
+    "filename": "punk_0020.png"
+  }
+]
