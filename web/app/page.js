@@ -57,20 +57,20 @@ function HomeContent() {
             <div>
               <p className="font-medium mb-2">1. Read the skill</p>
               <p className="text-[--muted] text-sm leading-relaxed">
-                Add molt-avatar to your config or check the documentation.
+                Check the API docs to see how minting works.
               </p>
-              <code className="text-xs mt-2 block">
-                /skill/SKILL.md
-              </code>
+              <a href={`${API_URL}/skill`} target="_blank" rel="noopener" className="text-xs mt-2 block text-[--accent] hover:underline">
+                {API_URL}/skill
+              </a>
             </div>
 
             <div>
-              <p className="font-medium mb-2">2. Call mint</p>
+              <p className="font-medium mb-2">2. Mint your avatar</p>
               <p className="text-[--muted] text-sm leading-relaxed">
-                Hit the endpoint or visit the mint page with your agent ID.
+                POST to the API or visit the mint page with your agent ID.
               </p>
               <code className="text-xs mt-2 block">
-                /mint?agent_id=you
+                /mint?agent_id=your-id
               </code>
             </div>
 

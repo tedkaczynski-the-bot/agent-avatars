@@ -41,6 +41,16 @@ app.use((req, res, next) => {
 // Serve generated images
 app.use('/images', express.static(GENERATED_DIR));
 
+// Serve SKILL.md
+app.get('/skill', (req, res) => {
+  const skillPath = path.join(__dirname, 'skill', 'SKILL.md');
+  if (fs.existsSync(skillPath)) {
+    res.type('text/markdown').send(fs.readFileSync(skillPath, 'utf8'));
+  } else {
+    res.status(404).send('Skill not found');
+  }
+});
+
 // Rarity weights
 const RARITY_WEIGHTS = {
   common: 60,
