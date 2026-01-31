@@ -205,6 +205,7 @@ async function generateAvatar() {
 app.get('/', (req, res) => {
   res.json({ 
     service: 'agent-avatars',
+    version: '1.0.5',
     status: 'ok',
     endpoints: {
       'POST /api/register': 'Register as an agent (body: {name, description?})',
