@@ -478,6 +478,43 @@ app.get('/api/avatar/:name', async (req, res) => {
 });
 
 // Stats (public)
+// Serve trait assets
+app.use('/assets', express.static(ASSETS_DIR));
+
+// List all traits with images
+app.get('/api/traits', (req, res) => {
+  const categories = ['backgrounds', 'base', 'eyes', 'mouth', 'hair', 'eyewear', 'headwear', 'accessories'];
+  const traits = {};
+  
+  for (const category of categories) {
+    const dir = path.join(ASSETS_DIR, category);
+    if (!fs.existsSync(dir)) continue;
+    
+    traits[category] = fs.readdirSync(dir)
+      .filter(f => f.endsWith('.png'))
+      .map(filename => {
+        const parts = filename.replace('.png', '').split('_');
+        const rarityPart = parts[parts.length - 1];
+        const rarity = ['common', 'uncommon', 'rare', 'legendary'].includes(rarityPart) 
+          ? rarityPart 
+          : 'common';
+        const name = parts.slice(0, -1).join(' ').replace(category + ' ', '');
+        return {
+          filename,
+          name: name || filename.replace('.png', ''),
+          rarity,
+          image_url: `/assets/${category}/${filename}`
+        };
+      })
+      .sort((a, b) => {
+        const order = { legendary: 0, rare: 1, uncommon: 2, common: 3 };
+        return order[a.rarity] - order[b.rarity];
+      });
+  }
+  
+  res.json(traits);
+});
+
 app.get('/api/stats', async (req, res) => {
   try {
     const agentCount = await pool.query('SELECT COUNT(*) FROM agents WHERE status = $1', ['claimed']);

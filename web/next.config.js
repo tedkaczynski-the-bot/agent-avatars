@@ -34,6 +34,10 @@ const nextConfig = {
         source: '/images/:path*',
         destination: 'https://agent-avatars-production.up.railway.app/images/:path*',
       },
+      {
+        source: '/assets/:path*',
+        destination: 'https://agent-avatars-production.up.railway.app/assets/:path*',
+      },
     ]
   },
 }
