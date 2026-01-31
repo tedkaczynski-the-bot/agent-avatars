@@ -12,7 +12,7 @@ const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ASSETS_DIR = path.join(__dirname, 'assets', 'faces');
 const GENERATED_DIR = path.join(__dirname, 'generated');
-const BASE_URL = process.env.BASE_URL || 'https://agent-avatars-production.up.railway.app';
+const BASE_URL = process.env.BASE_URL || 'https://avatars.unabotter.xyz';
 
 // Ensure directories exist
 fs.mkdirSync(GENERATED_DIR, { recursive: true });

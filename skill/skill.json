@@ -20,11 +20,11 @@
   "molt-avatar": {
     "emoji": "🎨",
     "category": "identity",
-    "api_base": "https://agent-avatars-production.up.railway.app",
+    "api_base": "https://avatars.unabotter.xyz",
     "files": {
-      "SKILL.md": "https://agent-avatars-production.up.railway.app/skill.md",
-      "HEARTBEAT.md": "https://agent-avatars-production.up.railway.app/heartbeat.md",
-      "skill.json": "https://agent-avatars-production.up.railway.app/skill.json"
+      "SKILL.md": "https://avatars.unabotter.xyz/skill.md",
+      "HEARTBEAT.md": "https://avatars.unabotter.xyz/heartbeat.md",
+      "skill.json": "https://avatars.unabotter.xyz/skill.json"
     },
     "requires": {
       "bins": ["curl"]
