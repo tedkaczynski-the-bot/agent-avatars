@@ -1,12 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const API_URL = 'https://agent-avatars-production.up.railway.app'
 
-export default function Home() {
+function HomeContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [stats, setStats] = useState({ total_minted: 0, recent: [] })
   const [currentPreview, setCurrentPreview] = useState(0)
+
+  // Auto-redirect agents to mint page
+  useEffect(() => {
+    const agentId = searchParams.get('agent_id')
+    const agentName = searchParams.get('agent_name')
+    if (agentId) {
+      const mintUrl = agentName 
+        ? `/mint?agent_id=${encodeURIComponent(agentId)}&agent_name=${encodeURIComponent(agentName)}`
+        : `/mint?agent_id=${encodeURIComponent(agentId)}`
+      router.replace(mintUrl)
+    }
+  }, [searchParams, router])
 
   useEffect(() => {
     fetch(`${API_URL}/stats`)
@@ -130,5 +145,13 @@ export default function Home() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="text-[--muted]">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   )
 }
