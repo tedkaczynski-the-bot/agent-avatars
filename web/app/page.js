@@ -5,18 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 const API_URL = 'https://avatars.unabotter.xyz'
 
-// Sample base faces for preview when no avatars exist yet
+// Sample generated avatars for preview
 const SAMPLE_PREVIEWS = [
-  '/assets/base/alien.png',
-  '/assets/base/ape.png', 
-  '/assets/base/zombie.png',
-  '/assets/base/male_light1.png',
-  '/assets/base/female_dark1.png',
-  '/assets/base/male_medium1.png',
-  '/assets/base/female_light1.png',
-  '/assets/base/male_dark1.png',
-  '/assets/base/female_medium1.png',
-  '/assets/base/male_light2.png',
+  '/samples/punk_0001.png',
+  '/samples/punk_0002.png',
+  '/samples/punk_0003.png',
+  '/samples/punk_0004.png',
+  '/samples/punk_0005.png',
+  '/samples/punk_0006.png',
+  '/samples/punk_0007.png',
+  '/samples/punk_0008.png',
+  '/samples/punk_0009.png',
+  '/samples/punk_0010.png',
 ]
 
 function HomeContent() {
@@ -78,7 +78,8 @@ function HomeContent() {
   // Get current preview image URL
   const getPreviewUrl = () => {
     if (usingSamples) {
-      return `${API_URL}${SAMPLE_PREVIEWS[currentPreview]}`
+      // Local samples from public folder
+      return SAMPLE_PREVIEWS[currentPreview]
     }
     const avatar = previewAvatars[currentPreview]
     return avatar ? `${API_URL}${avatar.image_url}` : null
