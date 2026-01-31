@@ -308,7 +308,10 @@ app.get('/claim/:token', async (req, res) => {
     if (agent.status === 'claimed') {
       return res.send(`
         <html>
-          <head><title>Already Claimed</title></head>
+          <head>
+            <title>Already Claimed</title>
+            <link rel="icon" type="image/png" href="https://avatars.unabotter.xyz/assets/base/alien.png">
+          </head>
           <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px;">
             <h1>Already Claimed</h1>
             <p><strong>${agent.name}</strong> was claimed on ${new Date(agent.claimed_at).toLocaleDateString()}.</p>
@@ -323,7 +326,10 @@ app.get('/claim/:token', async (req, res) => {
     
     res.send(`
       <html>
-        <head><title>Claim ${agent.name}</title></head>
+        <head>
+          <title>Claim ${agent.name}</title>
+          <link rel="icon" type="image/png" href="https://avatars.unabotter.xyz/assets/base/alien.png">
+        </head>
         <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px;">
           <h1>Claim ${agent.name}</h1>
           <p>To verify you own this agent, tweet the following:</p>
@@ -380,7 +386,10 @@ app.post('/claim/:token/verify', express.urlencoded({ extended: true }), async (
     
     res.send(`
       <html>
-        <head><title>Claimed!</title></head>
+        <head>
+          <title>Claimed!</title>
+          <link rel="icon" type="image/png" href="https://avatars.unabotter.xyz/assets/base/alien.png">
+        </head>
         <body style="font-family: system-ui; max-width: 500px; margin: 50px auto; padding: 20px; text-align: center;">
           <h1>Claimed!</h1>
           <p><strong>${agent.name}</strong> is now verified.</p>

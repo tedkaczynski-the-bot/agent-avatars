@@ -31,6 +31,10 @@ const nextConfig = {
         destination: 'https://agent-avatars-production.up.railway.app/claim/:token',
       },
       {
+        source: '/claim/:token/verify',
+        destination: 'https://agent-avatars-production.up.railway.app/claim/:token/verify',
+      },
+      {
         source: '/images/:path*',
         destination: 'https://agent-avatars-production.up.railway.app/images/:path*',
       },
