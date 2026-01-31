@@ -75,11 +75,7 @@ export default function Home() {
         </div>
 
         {/* Right: Preview */}
-        <div>
-          <h2 className="text-sm font-medium text-[--muted] uppercase tracking-wide mb-6">
-            Preview
-          </h2>
-          
+        <div className="pt-8">
           <div className="aspect-square w-full max-w-[280px] bg-[#f5f5f5] rounded-lg overflow-hidden">
             {preview ? (
               <img 
@@ -94,12 +90,6 @@ export default function Home() {
               </div>
             )}
           </div>
-          
-          {preview && (
-            <p className="text-sm text-[--muted] mt-3">
-              {preview.agent_name}
-            </p>
-          )}
         </div>
       </div>
 
