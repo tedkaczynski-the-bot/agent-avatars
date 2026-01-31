@@ -4,26 +4,42 @@ import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pg from 'pg';
+
+const { Pool } = pg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ASSETS_DIR = path.join(__dirname, 'assets', 'faces');
 const GENERATED_DIR = path.join(__dirname, 'generated');
-const DB_PATH = path.join(__dirname, 'data', 'avatars.json');
 
 // Ensure directories exist
 fs.mkdirSync(GENERATED_DIR, { recursive: true });
-fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
 
-// Simple JSON database
-function loadDB() {
-  if (!fs.existsSync(DB_PATH)) {
-    return { avatars: {} };
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false }
+});
+
+// Initialize database table
+async function initDB() {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS avatars (
+        id UUID PRIMARY KEY,
+        agent_id VARCHAR(255) UNIQUE NOT NULL,
+        agent_name VARCHAR(255),
+        moltbook_id VARCHAR(255),
+        filename VARCHAR(255) NOT NULL,
+        traits JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Database initialized');
+  } finally {
+    client.release();
   }
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-}
-
-function saveDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 }
 
 const app = express();
@@ -178,18 +194,21 @@ app.post('/mint', async (req, res) => {
       return res.status(400).json({ error: 'agent_id required' });
     }
     
-    const db = loadDB();
-    
     // Check if agent already has an avatar
-    if (db.avatars[agent_id]) {
-      const existing = db.avatars[agent_id];
+    const existing = await pool.query(
+      'SELECT * FROM avatars WHERE agent_id = $1',
+      [agent_id]
+    );
+    
+    if (existing.rows.length > 0) {
+      const avatar = existing.rows[0];
       return res.status(409).json({ 
         error: 'Agent already has an avatar',
         avatar: {
-          id: existing.id,
-          image_url: `/images/${existing.filename}`,
-          metadata: existing.traits,
-          created_at: existing.created_at
+          id: avatar.id,
+          image_url: `/images/${avatar.filename}`,
+          metadata: avatar.traits,
+          created_at: avatar.created_at
         }
       });
     }
@@ -198,16 +217,11 @@ app.post('/mint', async (req, res) => {
     const avatar = await generateAvatar(agent_id);
     
     // Save to database
-    db.avatars[agent_id] = {
-      id: avatar.id,
-      agent_id,
-      agent_name: agent_name || null,
-      moltbook_id: moltbook_id || null,
-      filename: avatar.filename,
-      traits: avatar.traits,
-      created_at: new Date().toISOString()
-    };
-    saveDB(db);
+    await pool.query(
+      `INSERT INTO avatars (id, agent_id, agent_name, moltbook_id, filename, traits)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [avatar.id, agent_id, agent_name || null, moltbook_id || null, avatar.filename, avatar.traits]
+    );
     
     res.json({
       success: true,
@@ -226,44 +240,63 @@ app.post('/mint', async (req, res) => {
 });
 
 // Get avatar by agent ID
-app.get('/avatar/:agentId', (req, res) => {
-  const { agentId } = req.params;
-  const db = loadDB();
-  const avatar = db.avatars[agentId];
-  
-  if (!avatar) {
-    return res.status(404).json({ error: 'No avatar found for this agent' });
+app.get('/avatar/:agentId', async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM avatars WHERE agent_id = $1',
+      [agentId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No avatar found for this agent' });
+    }
+    
+    const avatar = result.rows[0];
+    res.json({
+      id: avatar.id,
+      agent_id: avatar.agent_id,
+      agent_name: avatar.agent_name,
+      image_url: `/images/${avatar.filename}`,
+      metadata: avatar.traits,
+      created_at: avatar.created_at
+    });
+  } catch (err) {
+    console.error('Get avatar error:', err);
+    res.status(500).json({ error: 'Database error' });
   }
-  
-  res.json({
-    id: avatar.id,
-    agent_id: avatar.agent_id,
-    agent_name: avatar.agent_name,
-    image_url: `/images/${avatar.filename}`,
-    metadata: avatar.traits,
-    created_at: avatar.created_at
-  });
 });
 
 // Get stats
-app.get('/stats', (req, res) => {
-  const db = loadDB();
-  const avatars = Object.values(db.avatars);
-  const recent = avatars
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 10);
-  
-  res.json({
-    total_minted: avatars.length,
-    recent: recent.map(a => ({
-      agent_name: a.agent_name || a.agent_id,
-      image_url: `/images/${a.filename}`,
-      created_at: a.created_at
-    }))
-  });
+app.get('/stats', async (req, res) => {
+  try {
+    const countResult = await pool.query('SELECT COUNT(*) FROM avatars');
+    const recentResult = await pool.query(
+      'SELECT agent_name, agent_id, filename, created_at FROM avatars ORDER BY created_at DESC LIMIT 10'
+    );
+    
+    res.json({
+      total_minted: parseInt(countResult.rows[0].count),
+      recent: recentResult.rows.map(a => ({
+        agent_name: a.agent_name || a.agent_id,
+        image_url: `/images/${a.filename}`,
+        created_at: a.created_at
+      }))
+    });
+  } catch (err) {
+    console.error('Stats error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Agent Avatars API running on port ${PORT}`);
+
+// Initialize DB then start server
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Agent Avatars API running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
 });
