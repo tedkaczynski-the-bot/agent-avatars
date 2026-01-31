@@ -30,7 +30,7 @@ export default function Home() {
     <div className="space-y-12">
       
       {/* Two columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         
         {/* Left: Instructions */}
         <div>
@@ -75,7 +75,7 @@ export default function Home() {
         </div>
 
         {/* Right: Preview */}
-        <div className="pt-8">
+        <div>
           <div className="aspect-square w-full max-w-[280px] bg-[#f5f5f5] rounded-lg overflow-hidden">
             {preview ? (
               <img 
