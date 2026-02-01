@@ -4,3 +4,5 @@ data/
 *.log
 generated/
 previews/
+.vercel
+.env*.local
