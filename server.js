@@ -697,7 +697,7 @@ app.get('/api/stats', async (req, res) => {
     try {
       // Get recent avatars
       const avatarsResult = await pool.query(
-        `SELECT * FROM avatars ORDER BY created_at DESC LIMIT 10`
+        `SELECT * FROM avatars ORDER BY created_at DESC`
       );
       
       // Get agent names for each avatar
